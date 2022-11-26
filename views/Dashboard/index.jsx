@@ -18,6 +18,7 @@ export default function Dashboard() {
   const [showModal, setModal] = React.useState(false);
   const [pod, setPod] = React.useState(initialState);
   const [potsList, setPotsList] = React.useState([]);
+  const [isEdit, setIsEdit] = React.useState(false);
 
   const onChangeText = (property, value) => {
     setPod({
@@ -29,6 +30,7 @@ export default function Dashboard() {
   const closeModal = () => {
     setPod(initialState);
     setModal(false);
+    setIsEdit(false);
   };
 
   const savePot = async () => {
@@ -37,10 +39,22 @@ export default function Dashboard() {
       const auth = getAuth();
       const user = auth.currentUser;
       await set(ref(db, `usuarios/${user.uid}/macetas/${pod.mac}`), pod);
+      if (isEdit) {
+        await set(ref(db, `macetas/${pod.mac}/humedad`), {
+          max: parseInt(pod.maxHum),
+          min: parseInt(pod.minHum),
+        });
+      }
       closeModal();
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const setEdit = async (pod) => {
+    setPod(pod);
+    setModal(true);
+    setIsEdit(true);
   };
 
   const getPots = async () => {
@@ -75,6 +89,8 @@ export default function Dashboard() {
             minHum={item.minHum}
             maxHum={item.maxHum}
             key={idx}
+            edit={() => setEdit(item)}
+            delete={() => deletePot(item.mac)}
           />
         );
       })}

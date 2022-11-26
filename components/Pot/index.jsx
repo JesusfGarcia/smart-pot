@@ -4,7 +4,10 @@ import { View, Text, StyleSheet } from "react-native";
 
 import { getDatabase, ref, onValue } from "firebase/database";
 
-export default function Pot({ mac, name, maxHum, minHum }) {
+import { AntDesign } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
+
+export default function Pot({ mac, name, edit }) {
   const [humedad, setHumedad] = React.useState({
     actual: 0,
     max: 0,
@@ -18,7 +21,9 @@ export default function Pot({ mac, name, maxHum, minHum }) {
 
       onValue(pot, (myPot) => {
         const data = myPot.val();
-        setHumedad(data.humedad);
+        if (data) {
+          setHumedad(data.humedad);
+        }
       });
     } catch (error) {}
   };
@@ -29,10 +34,17 @@ export default function Pot({ mac, name, maxHum, minHum }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{name}</Text>
-      <View>
-        <Text>{`Nivel de Humedad`}</Text>
-        <Text>{`${parseFloat(humedad.actual).toFixed(2)}%`}</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>{name}</Text>
+        <View style={styles.iconContainer}>
+          <AntDesign onPress={edit} name="edit" size={24} color="#9d6d5a" />
+        </View>
+      </View>
+      <View style={styles.humContainer}>
+        <Entypo name="drop" size={40} color="#004e98" />
+        <Text style={{ color: "#004e98" }}>{`${parseFloat(
+          humedad.actual
+        ).toFixed(2)}%`}</Text>
       </View>
     </View>
   );
@@ -45,11 +57,27 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 15,
     borderRadius: 16,
+    marginBottom: 10,
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     color: "#9d6d5a",
     marginBottom: 10,
+  },
+  header: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  iconContainer: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  humContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
