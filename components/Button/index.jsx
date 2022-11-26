@@ -1,11 +1,20 @@
 import React from "react";
 
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 
-export default function Button({ text, type, onClick }) {
+export default function Button({ text, type, onClick, loading = false }) {
   return (
     <TouchableOpacity onPress={onClick}>
-      <Text style={styles[type]}>{text}</Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#87eba4" />
+      ) : (
+        <Text style={styles[type]}>{text}</Text>
+      )}
     </TouchableOpacity>
   );
 }

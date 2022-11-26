@@ -33,10 +33,11 @@ const styles = StyleSheet.create({
     borderColor: "#eba487",
     width: "100%",
     marginBottom: 20,
+    minWidth: 320,
   },
   label: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#eba487",
   },
 });

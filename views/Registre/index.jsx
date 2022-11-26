@@ -1,23 +1,22 @@
 import React from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
+
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
 
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import TextError from "../../components/TextError";
 
-import { authContext } from "../../App";
-
-export default function Login({ navigation }) {
+export default function Registre({ navigation }) {
   const [user, setUser] = React.useState({
     email: "",
     password: "",
   });
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [isSuccess, setIsSuccess] = React.useState(false);
   const [error, setError] = React.useState(null);
-  const { changeUser } = React.useContext(authContext);
 
   const onChangeText = (property, text) => {
     setUser({
@@ -26,24 +25,25 @@ export default function Login({ navigation }) {
     });
   };
 
-  const SignIn = async () => {
+  const signUp = async () => {
     try {
-      setIsLoading(true);
-      setError(false);
+      setLoading(true);
       const auth = getAuth();
-      const response = await signInWithEmailAndPassword(
-        auth,
-        user.email,
-        user.password
-      );
-
-      changeUser(response.user);
-      setIsLoading(false);
+      await createUserWithEmailAndPassword(auth, user.email, user.password);
+      setIsSuccess(true);
+      setLoading(false);
     } catch (error) {
       setError(error.message);
-      setIsLoading(false);
+      setLoading(false);
     }
   };
+
+  React.useEffect(() => {
+    if (isSuccess) {
+      alert("Registro exitoso");
+      navigation.navigate("Login");
+    }
+  }, [isSuccess]);
 
   return (
     <View style={styles.container}>
@@ -65,15 +65,15 @@ export default function Login({ navigation }) {
       </View>
       <TextError error={error} />
       <Button
-        onClick={SignIn}
-        loading={isLoading}
+        loading={loading}
+        onClick={signUp}
         type="button"
-        text="Ingresar"
+        text="Registrarme"
       />
       <Button
-        onClick={() => navigation.navigate("Registro")}
+        onClick={() => navigation.navigate("Login")}
         type="link"
-        text="Aún no tienes cuenta? Registrate aquí!"
+        text="Ya tienes una cuenta? Ingresa aquí!"
       />
       <StatusBar style="auto" />
     </View>
@@ -88,5 +88,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     padding: 20,
+  },
+  error: {
+    color: "#d44343",
   },
 });
